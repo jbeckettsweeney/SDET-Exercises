@@ -1,0 +1,110 @@
+This file will serve as a compilation of my thoughts during the process of the technical exercise, including learning how to do it.
+
+To start, I should say that before today, I had never been exposed to automation like this before. I knew I loved the idea of automation, but doing it in practice even cooler than I imagined and I have had so much fun with this already.
+
+
+
+--The First Thing
+
+The very first thing I did was read the instructions for the exercise. After reading through them, it was VERY clear that I had some googling to do. I knew of Node and Angular, but I had never used either, and prior to reading the listing for this job, I hadn't heard of Protractor, Selenium, or Jasmine.
+
+The instructions say to use whatever tool we're most familiar with, and since I was not familiar with any, I chose Protractor since it's what the SDET role uses.
+
+
+
+--Getting Started With Protractor
+
+That's what I searched.
+I ended up choosing:
+https://www.protractortest.org/#/getting-started
+
+This page was an excellent start point. However, I needed to install everything first. That process took about half an hour total. One issue I encountered was that I couldn't check the version type of Protractor because my computer didn't want scripts to run, so I had to Administrator Powershell change a setting to allow them. Once I'm finished testing, I'll be changing this setting back until I take the time to allow only the specific scripts needed.
+
+I proceeded through the first few steps, but when I got to the first actual test, nothing happened. I did a search and didn't find a similar issue, so I planned to restart my WebDriver server I had running. Turns out, I just needed to hit Enter on it once and then it ran both of my previous attempts at the automation test.
+
+The tests were successful, but the syntax of the spec.js file still didn't quite sink in. Also, because the Chrome window opened behind my Powershell window, I couldn't see it happen. So as the test started, I clicked on the Chrome window to bring it to the front and the test failed. This made sense to me that interrupting it likely causes it to fail, so going forward I minimized Powershell instead to see it happen.
+
+The moment I read through Step 2, everything clicked, and I got so much more excited about what this job could be. I manually went to the tutorial page being automated and I opened the web inspector to check out the elements and I saw all of the details that I now expected to see, namely the ng-<thing> tags within each element.
+
+Step 3 was interesting because it had me switch the configuration to use Firefox instead of Chrome. This failed entirely, and as I watched it try, it seemed like my Firefox settings were blocking it from doing anything. I moved on to running it on both Chrome and Firefox at the same time, and the Chrome one still worked perfectly, so the problem was clearly with my Firefox.
+
+The rest of the tutorial page went smoothly, and now I think I'm ready to attempt the actual exercise.
+
+
+
+--SDET Exercise
+
+I have read through the instructions again and have opened the tabs of the hints at the bottom, as I absolutely will need them.
+
+The first thing I needed to do was figure out how to find the Registration button without the angular tags.
+
+finding elements
+https://stackoverflow.com/questions/20927652/how-to-use-protractor-on-non-angularjs-website
+
+getting xpath
+https://www.guru99.com/xpath-selenium.html#9
+
+href xpath
+https://stackoverflow.com/questions/13124942/xpath-for-href-element
+
+switching tabs
+https://stackoverflow.com/questions/28788106/switching-to-new-window-with-selenium-protractor-javascript
+
+I ran into a number of errors trying to automate the landing page. Things like "driver does not exist", "Invalid Locator", and I finally gave up on "element not interactable". Something changes in it being interactable when hovering over the element, but it took too long to figure that out so I moved on to going straight to the registration page.
+
+On the second page, the first error I found was that the test couldn't find things by model or sometimes by name. This was because I still had "waitForAngularEnabled" set to False for the sake of working with the first page.
+
+The next error was not being able to find and click the login button. On a whim I tried clicking it's parent instead (".form-actions") and that worked!
+
+I struggled for a while to find the elements that contained "Home" and "you're logged in", so at this point I emailed Mitch about some of the troubles I've had. His suggestions were excellent, and because of them I was able to go back and get the Registration click from the landing page working. Unfortunately, I still struggled too much with finding elements by text. I would greatly appreciate being shown a successful example of finding an element by text on the Registration page, but from here I started using my time to design the rest of the exercizes, with dummy values included for the assertions so that they pass automatically (I do watch the window do its thing and it does appear to successfully make it to the logged in page before erroring out).
+
+When beginning the second exercise, I started with a copy of the first, then adjusted the pieces as necessary. The first problem I ran into here is that I didn't previously close the landing page tab, so when the second test ran through, it pointed not to the new registration tab, but to the second landing page (the first registration tab closed on its own). I solved this by closing the landing page tab when moving to the registration page, so each test ends with zero tabs open.
+
+I tried finding the failure text by the same methods I had attempted already and they did not work, so I quickly switched to dummy values.
+
+
+I'm deciding to keep it all in for full transparency, but the button was not being clicked. I changed finding the button to just being by xpath('//button') since there's only one button and this worked. The logged in page opened and it found the "Home" heading. 
+
+Exercise 1 is now a complete and 100% success after about 4 hours of persistence.
+
+Going back to exercise 2, elements can now not be found by model. If I recall correctly, this error meant that it was trying to find stuff before Angular was ready.
+
+This was nearly immediately proven wrong. Manually checking, the login page remains logged in when you open a new tab, so now the last thing the first test does is find and click the "log out" button. 
+
+Exercise 2 is now a complete and 100% success after about 20 non-consecutive minutes more.
+
+
+I have just now remembered that the top of the exercise instructions say to use the Page Object Design Pattern, which I haven't done yet, so I'm going to rework what I've done so far to follow this.
+
+Page Object Model
+https://www.guru99.com/page-object-model-pom-page-factory-in-selenium-ultimate-guide.html
+
+I've run into a lot of errors in trying to have each page's class file be outside of spec.js, so I'm just going to include the classes at the top of spec.js.
+
+This has helped a bit with readability and redundancy so I'm glad I took the time. This was about 20 minutes.
+
+
+NOW I'm starting exercise 3.
+
+filtering tables
+https://stackoverflow.com/questions/49319066/getting-table-data-and-storing-it-using-protractor
+
+if statements and pretty much everything i needed
+https://stackoverflow.com/questions/44362880/protractor-if-else-with-expectcondition
+
+After somewhere between 2 and 3 hours trying to get what I wanted from the table on the Table page, I FINALLY have a list of all usernames as strings. I know this is almost certainly not the best way to go about this, but its the way that I'm most familiar with. Looking at all of the attempts that I had made up to this point, I very nearly had it a few times, which is comforting.
+
+I GOT IT.
+
+I would say from getting that list to clicking the OK button took about one additional hour. I'm going to take some time to clean it up.
+
+To verify, it currently goes through the list of usernames again and changes a boolean if it finds 'admin' again. I tested this against one of the other usernames and it appropriately threw the error when the boolean became false.
+
+
+--Final Thoughts
+
+I have now cleaned up and run the entire thing and it appears to work perfectly. I know this took far longer than the instructions said to do it, but I found it so very interesting and immensely satisfying to complete. If I had to pick one thing about myself to convince you to select me for the SDET role, it would be that I enjoy doing this and that I want to do this for Schedulicity.
+
+
+- J. Beckett Sweeney
+
